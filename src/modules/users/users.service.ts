@@ -1,24 +1,48 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { CreateUserDto } from './dto/create-user.dto'
-
+import { InjectModel } from '@nestjs/mongoose'
+import { Model, Types } from 'mongoose'
+import { User } from './model/user.model'
 @Injectable()
 export class UsersService {
-  private readonly users = []
+  constructor(
+    @InjectModel('User')
+    private readonly userModel: Model<User>,
+  ) {}
 
-  create(createUserDto: CreateUserDto) {
-    const user = {
-      id: this.users.length + 1,
-      ...createUserDto,
+  async create(createUserDto: CreateUserDto): Promise<any> {
+    try {
+      const newUser = await this.userModel.create(createUserDto)
+      return newUser.save()
+    } catch (error) {
+      throw new InternalServerErrorException(error)
     }
-    this.users.push(user)
-    return user
   }
 
-  getAllUsers() {
-    return this.users
+  async getAllUsers() {
+    try {
+      const users = await this.userModel.find()
+      return users
+    } catch (error) {
+      throw new InternalServerErrorException(error)
+    }
   }
 
-  getUserById(id: number) {
-    return this.users.find((user) => user.id == id)
+  async getUserById(userId: Types.ObjectId) {
+    try {
+      const user = await this.userModel.findById(userId)
+      return user
+    } catch (error) {
+      throw new InternalServerErrorException(error)
+    }
+  }
+
+  async deleteUserById(userId: Types.ObjectId) {
+    try {
+      const user = await this.userModel.findByIdAndDelete(userId)
+      return { ...user, deleted: true }
+    } catch (error) {
+      throw new InternalServerErrorException(error)
+    }
   }
 }
