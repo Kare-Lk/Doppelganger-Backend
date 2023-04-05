@@ -19,7 +19,7 @@
   "rules": {
     "quotes": [2, "single", { "avoidEscape": true }],
     "semi": "off",
-    "no-console": "error",
+   /*  "no-console": "error", */
     "eqeqeq": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
