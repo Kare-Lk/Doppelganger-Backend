@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class BlasterChileService {
+  async initScrapingBlasterChile(page) {
+    await page.goto('https://www.blasterchile.cl/collections/model-kit/Gundam')
+    const res = await this.obtainProducts(page)
+    return res
+  }
+
   async obtainProductDetails(product) {
     const titleElement = await product.$(
       '.product-block__title .product-block__title-link',

@@ -7,6 +7,6 @@ export class ScrapingController {
 
   @Get()
   getScraping() {
-    return this.scrapingService.getScraping()
+    return this.scrapingService.initScraping()
   }
 }
