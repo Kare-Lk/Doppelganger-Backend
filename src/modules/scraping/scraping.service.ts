@@ -21,15 +21,6 @@ export class ScrapingService {
       productPriceSelector: '.product-price .theme-money .money',
       productLinkSelector: '.product-block__title .product-block__title-link',
     },
-    /*   {
-      name: 'Hangar019',
-      url: 'https://www.hangar019.cl/8-gunpla?marca=bandai&en-stock=1&orderby=price&orderway=desc',
-      nextPageSelector: 'li.pagination_next a',
-      productSelector: '.right-block',
-      productTitleSelector: '.product-name-container a.product-name',
-      productPriceSelector: '.content_price .price',
-      productLinkSelector: '.product-name-container a.product-name',
-    }, */
     {
       name: 'Irion',
       url: 'https://irion.cl/marcas/gundam/page/1/?orderby=price-desc&stock=instock',
@@ -39,6 +30,15 @@ export class ScrapingService {
       productPriceSelector: '.woocommerce-Price-amount.amount bdi',
       productLinkSelector:
         'div.product-loop-header a.woocommerce-LoopProduct-link',
+    },
+    {
+      name: 'Hangar019',
+      url: 'https://www.hangar019.cl/8-gunpla?marca=bandai&en-stock=1&orderby=price&orderway=desc',
+      nextPageSelector: 'li.pagination_next a',
+      productSelector: '.right-block',
+      productTitleSelector: '.product-name-container a.product-name',
+      productPriceSelector: '.content_price .price',
+      productLinkSelector: '.product-name-container a.product-name',
     },
   ]
 
@@ -51,7 +51,7 @@ export class ScrapingService {
       const res = await this.initScraping(page, store)
       results.push(...res)
     }
-    /*   const page = await browser.newPage()
+    /*  const page = await browser.newPage()
     const results = await this.initScraping(page, this.STORE_LIST[3]) */
     await browser.close()
     return results
