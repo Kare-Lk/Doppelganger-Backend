@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
+import { Document, Schema as MongooseSchema, Types } from 'mongoose'
 
 export enum ProductCategory {
   Gunpla = 'gunpla',
@@ -7,10 +7,24 @@ export enum ProductCategory {
   Tool = 'tool',
   Other = 'other',
 }
+
+export enum GunplaGrade {
+  MasterGrade = 'MG',
+  PerfectGrade = 'PG',
+  RealGrade = 'RG',
+  HighGrade = 'HG',
+  HighGradeUniversalCentury = 'HGUC',
+}
 @Schema({ timestamps: { createdAt: 'create_at', updatedAt: 'update_at' } })
 export class Product extends Document {
   @Prop({ required: true })
   name: string
+
+  @Prop({
+    required: false,
+    enum: Object.values(GunplaGrade),
+  })
+  gunpla_grade?: GunplaGrade
 
   @Prop({
     required: true,

@@ -6,11 +6,17 @@ export class StoreProduct extends Document {
   @Prop({ required: true })
   name: string
 
-  @Prop({ required: true })
-  price: string
+  @Prop({ type: [{ price: Number, date: Date }], required: true })
+  price_history: Array<{
+    price: number
+    date: Date
+  }>
 
   @Prop({ required: true })
   link: string
+
+  @Prop({ required: true, default: false })
+  available: boolean
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
