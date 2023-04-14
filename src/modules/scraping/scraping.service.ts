@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common'
 import puppeteer from 'puppeteer'
 import { StoresService } from '../stores/stores.service'
+import { ClassificateProductsService } from '../products/services/classificate/classificate-products.service'
 @Injectable()
 export class ScrapingService {
-  constructor(private readonly storeService: StoresService) {}
+  constructor(
+    private readonly storeService: StoresService,
+    private readonly classificateProductService: ClassificateProductsService,
+  ) {}
 
   STORE_TEST = {}
 
   async getStoreScraping() {
-    const browser = await puppeteer.launch()
     console.log('init...')
+    const browser = await puppeteer.launch({})
+    console.log('launched browser')
     const results = []
     const stores = await this.storeService.getAllStores()
     console.log('stores', stores)
@@ -100,6 +105,12 @@ export class ScrapingService {
     const productPrice = await priceElement.evaluate((node) => node.textContent)
     const productLink = await linkElement.evaluate((node) => node.href)
     console.log('askljdlkas', {
+      store_id: storeData._id,
+      title: productTitle,
+      price: productPrice,
+      link: productLink,
+    })
+    await this.classificateProductService.clasificateProduct({
       store_id: storeData._id,
       title: productTitle,
       price: productPrice,

@@ -6,6 +6,9 @@ export class StoreProduct extends Document {
   @Prop({ required: true })
   name: string
 
+  @Prop({ required: false })
+  normalized_name: string
+
   @Prop({ required: true })
   actual_price: number
 

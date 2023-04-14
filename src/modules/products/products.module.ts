@@ -16,6 +16,7 @@ import { GetProductsService } from './services/get/get-product.service'
     ]),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
   ],
+  exports: [CreateProductService],
   controllers: [ProductsController],
   providers: [
     ClassificateProductsService,

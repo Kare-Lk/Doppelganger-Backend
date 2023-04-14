@@ -13,15 +13,17 @@ export class ProductsController {
   @Get('get')
   getProductsTest(
     @Body('name') name?: string,
+    @Body('name_product_store') name_product_store?: string,
     @Body('category') category?: string,
     @Body('gunpla_grade') gunpla_grade?: string,
-    @Body('price') price?: number,
+    @Body('max_price') max_price?: number,
   ) {
     return this.getProductsService.findProduct(
       name,
+      name_product_store,
       category,
       gunpla_grade,
-      price,
+      max_price,
     )
   }
 

@@ -12,8 +12,10 @@ export enum GunplaGrade {
   MasterGrade = 'MG',
   PerfectGrade = 'PG',
   RealGrade = 'RG',
+  /*  RebornOneHundred = 'RE/100', */
   HighGrade = 'HG',
-  HighGradeUniversalCentury = 'HGUC',
+  /*  HighGradeUniversalCentury = 'HGUC',
+  SDBBSenshi = 'SD', */
 }
 @Schema({ timestamps: { createdAt: 'create_at', updatedAt: 'update_at' } })
 export class Product extends Document {

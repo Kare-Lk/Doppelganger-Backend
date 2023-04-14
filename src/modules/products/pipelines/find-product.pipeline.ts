@@ -1,14 +1,19 @@
 export function findProductPipeline(
-  name: string,
-  category: string,
-  gunpla_grade: string,
-  price: number,
+  name?: string,
+  name_product_store?: string,
+  category?: string,
+  gunpla_grade?: string,
+  max_price?: number,
 ) {
-  console.log('price', typeof price)
   const filters = {}
+  const store_filters = {}
   if (name) filters['name'] = new RegExp(name, 'i')
   if (category) filters['category'] = new RegExp(category, 'i')
   if (gunpla_grade) filters['gunpla_grade'] = new RegExp(gunpla_grade, 'i')
+
+  if (name_product_store)
+    store_filters['name'] = new RegExp(name_product_store, 'i')
+  if (max_price) store_filters['actual_price'] = { $lte: Number(max_price) }
 
   const pipeline = [
     {
@@ -23,9 +28,9 @@ export function findProductPipeline(
       },
     },
   ]
-  if (price) {
+  if (max_price) {
     pipeline.push({
-      $match: { 'store_products.actual_price': { $lte: Number(price) } },
+      $match: store_filters,
     })
   }
 

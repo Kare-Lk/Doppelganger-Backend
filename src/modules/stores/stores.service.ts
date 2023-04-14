@@ -16,29 +16,24 @@ export class StoresService {
     return await this.storeModel.find()
   }
 
-  async creatStoreProduct(storeProduct): Promise<any> {
+  async createStoreProduct(storeProduct): Promise<any> {
     const newStoreProduct = new this.StoreProduct(storeProduct)
     return await newStoreProduct.save()
   }
 
   async updateStoreProduct(storeProduct): Promise<any> {
-    const res = await this.StoreProduct.findByIdAndUpdate(
+    return await this.StoreProduct.findByIdAndUpdate(
       storeProduct._id,
       storeProduct,
     )
-    return res
   }
 
   async getStoreProductById(id: string): Promise<any> {
-    try {
-      return await this.StoreProduct.findById(id)
-    } catch (error) {
-      console.log('error', error)
-      return error
-    }
+    return await this.StoreProduct.findById(id)
   }
 
   async getStoreProductByName(name: string): Promise<any> {
+    console.log('get store product by name', name)
     const regex = new RegExp(name, 'i') //la i es para que sea case insensitive
     return await this.StoreProduct.findOne({ name: regex }).exec()
   }
