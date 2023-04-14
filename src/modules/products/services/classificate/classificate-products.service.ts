@@ -1,29 +1,28 @@
-import { Injectable } from '@nestjs/common'
 import { Model, Types } from 'mongoose'
+import { StoresService } from 'src/modules/stores/stores.service'
+import { GunplaGrade, Product } from '../../model/product.model'
+import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { GunplaGrade, Product } from './model/product.model'
-import { StoresService } from '../stores/stores.service'
 import { formatPriceToNumber } from 'src/common/helpers/helpers'
+import { CreateProductService } from '../create/create-product.service'
 
 @Injectable()
-export class ProductsService {
+export class ClassificateProductsService {
   constructor(
+    private readonly createProductService: CreateProductService,
     private readonly storesService: StoresService,
     @InjectModel(Product.name) private readonly productModel: Model<Product>,
   ) {}
 
-  async clasificateProducts(product: {
+  async clasificateProduct(product: {
     store_id: Types.ObjectId
     title: string
     price: string
     link: string
   }) {
-    console.log('product: ', product)
-
     const product_on_db = await this.storesService.getStoreProductByName(
       product.title,
     )
-    console.log('product_on_db', product_on_db)
 
     if (!product_on_db) {
       try {
@@ -38,9 +37,12 @@ export class ProductsService {
             break
           }
         }
-        const { _id } = await this.createProduct(temp_product)
+        const { _id } = await this.createProductService.createProduct(
+          temp_product,
+        )
         const temp_store_product = {
           name: product.title,
+          actual_price: formatPriceToNumber(product.price),
           price_history: [
             { price: formatPriceToNumber(product.price), date: new Date() },
           ],
@@ -58,6 +60,7 @@ export class ProductsService {
       try {
         const temp_product = {
           ...product_on_db._doc,
+          actual_price: formatPriceToNumber(product.price),
           price_history: [
             ...product_on_db._doc.price_history,
             {
@@ -72,10 +75,5 @@ export class ProductsService {
         return error
       }
     }
-  }
-
-  async createProduct(product) {
-    const newProduct = new this.productModel(product)
-    return await newProduct.save()
   }
 }

@@ -13,36 +13,20 @@ export class StoresService {
   ) {}
 
   async getAllStores(): Promise<any> {
-    try {
-      return await this.storeModel.find()
-    } catch (error) {
-      console.log('error', error)
-      return error
-    }
+    return await this.storeModel.find()
   }
 
   async creatStoreProduct(storeProduct): Promise<any> {
-    console.log('createStoreProduct', storeProduct)
-    try {
-      const newStoreProduct = new this.StoreProduct(storeProduct)
-      return await newStoreProduct.save()
-    } catch (error) {
-      console.log('error', error)
-      return error
-    }
+    const newStoreProduct = new this.StoreProduct(storeProduct)
+    return await newStoreProduct.save()
   }
 
   async updateStoreProduct(storeProduct): Promise<any> {
-    try {
-      const res = await this.StoreProduct.findByIdAndUpdate(
-        storeProduct._id,
-        storeProduct,
-      )
-      return res
-    } catch (error) {
-      console.log('error', error)
-      return error
-    }
+    const res = await this.StoreProduct.findByIdAndUpdate(
+      storeProduct._id,
+      storeProduct,
+    )
+    return res
   }
 
   async getStoreProductById(id: string): Promise<any> {
@@ -55,12 +39,7 @@ export class StoresService {
   }
 
   async getStoreProductByName(name: string): Promise<any> {
-    try {
-      const regex = new RegExp(name, 'i') //la i es para que sea case insensitive
-      return await this.StoreProduct.findOne({ name: regex }).exec()
-    } catch (error) {
-      console.log('error', error)
-      return error
-    }
+    const regex = new RegExp(name, 'i') //la i es para que sea case insensitive
+    return await this.StoreProduct.findOne({ name: regex }).exec()
   }
 }

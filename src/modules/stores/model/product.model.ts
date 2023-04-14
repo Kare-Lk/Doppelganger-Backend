@@ -6,6 +6,9 @@ export class StoreProduct extends Document {
   @Prop({ required: true })
   name: string
 
+  @Prop({ required: true })
+  actual_price: number
+
   @Prop({ type: [{ price: Number, date: Date }], required: true })
   price_history: Array<{
     price: number
