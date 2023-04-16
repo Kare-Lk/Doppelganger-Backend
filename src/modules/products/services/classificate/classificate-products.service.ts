@@ -70,33 +70,11 @@ export class ClassificateProductsService {
         )
 
         for (const registered_product of registered_products) {
-          const nameSimilarity = stringSimilarity.compareTwoStrings(
-            registered_product.name,
+          await this.isAlreadyOnStoreProduct(
+            newProduct,
+            registered_product,
             normalizedName,
           )
-          console.log('nameSimilarity: ', nameSimilarity)
-          // estudiando que similarity es la correcta
-          if (nameSimilarity > 0.85) {
-            /* 
-              Si la similaridad es correcta, se crea el nuevo producto en la tienda tienda
-            */
-            const newStoreProduct = {
-              name: newProduct.title,
-              normalized_name: normalizedName,
-              actual_price: formatPriceToNumber(newProduct.price),
-              price_history: [
-                {
-                  price: formatPriceToNumber(newProduct.price),
-                  date: new Date(),
-                },
-              ],
-              link: newProduct.link,
-              available: true,
-              store_id: newProduct.store_id,
-              product_id: registered_product._id,
-            }
-            return await this.storesService.createStoreProduct(newStoreProduct)
-          }
         }
         const { _id } = await this.createProductService.createProduct({
           name: normalizedName,
@@ -120,6 +98,44 @@ export class ClassificateProductsService {
         }
         return await this.storesService.createStoreProduct(temp_store_product)
       }
+    }
+  }
+
+  async isAlreadyOnStoreProduct(newProduct, registeredProduct, normalizedName) {
+    const storeAlreadyOnProduct = registeredProduct.store_products.some(
+      (store) => store.store_id.toString() === newProduct.store_id.toString(),
+    )
+    console.log('is on the product: ', storeAlreadyOnProduct ? 'yes' : 'no')
+    if (storeAlreadyOnProduct) return
+    console.log('passed the store check')
+
+    const nameSimilarity = stringSimilarity.compareTwoStrings(
+      registeredProduct.name,
+      normalizedName,
+    )
+
+    console.log('nameSimilarity: ', nameSimilarity)
+    // estudiando que similarity es la correcta
+    if (nameSimilarity > 0.85) {
+      /* 
+        Si la similaridad es correcta, se crea el nuevo producto en la tienda tienda
+      */
+      const newStoreProduct = {
+        name: newProduct.title,
+        normalized_name: normalizedName,
+        actual_price: formatPriceToNumber(newProduct.price),
+        price_history: [
+          {
+            price: formatPriceToNumber(newProduct.price),
+            date: new Date(),
+          },
+        ],
+        link: newProduct.link,
+        available: true,
+        store_id: newProduct.store_id,
+        product_id: registeredProduct._id,
+      }
+      return await this.storesService.createStoreProduct(newStoreProduct)
     }
   }
 }
