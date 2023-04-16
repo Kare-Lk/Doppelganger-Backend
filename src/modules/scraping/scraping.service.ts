@@ -104,7 +104,7 @@ export class ScrapingService {
     const productTitle = await titleElement.evaluate((node) => node.textContent)
     const productPrice = await priceElement.evaluate((node) => node.textContent)
     const productLink = await linkElement.evaluate((node) => node.href)
-    console.log('askljdlkas', {
+    console.log('productInfo: ', {
       store_id: storeData._id,
       title: productTitle,
       price: productPrice,
