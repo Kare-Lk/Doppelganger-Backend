@@ -26,6 +26,7 @@ export class ScrapingService {
     /*  const page = await browser.newPage()
     const results = await this.initScraping(page, this.STORE_TEST) */
     await browser.close()
+    console.log('total Product Scraped: ', results.length)
     return results
   }
 

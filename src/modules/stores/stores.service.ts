@@ -21,11 +21,8 @@ export class StoresService {
     return await newStoreProduct.save()
   }
 
-  async updateStoreProduct(storeProduct): Promise<any> {
-    return await this.StoreProduct.findByIdAndUpdate(
-      storeProduct._id,
-      storeProduct,
-    )
+  async updateStoreProduct(_id, storeProduct): Promise<any> {
+    return await this.StoreProduct.findByIdAndUpdate(_id, storeProduct)
   }
 
   async getStoreProductById(id: string): Promise<any> {
