@@ -17,12 +17,17 @@ export class ScrapingService {
     console.log('launched browser')
     const results = []
     const stores = await this.storeService.getAllStores()
-    console.log('stores', stores)
+    //console.log('stores', stores)
     for (const store of stores) {
       const page = await browser.newPage()
       const res = await this.initScraping(page, store)
       results.push(...res)
     }
+
+    /*  const page = await browser.newPage()
+    const res = await this.initScraping(page, stores[1])
+    results.push(...res) */
+
     /*  const page = await browser.newPage()
     const results = await this.initScraping(page, this.STORE_TEST) */
     await browser.close()
@@ -31,17 +36,16 @@ export class ScrapingService {
   }
 
   async initScraping(page, storeData) {
-    console.log('storeSelected: ', storeData.name)
+    //console.log('storeSelected: ', storeData.name)
     await page.goto(storeData.link)
     return await this.obtainProducts(page, storeData)
   }
 
   async obtainProducts(page, storeData) {
-    console.log('obtaining products...')
+    //console.log('obtaining products...')
     const processedProducts = []
     let url
     do {
-      console.log('looped')
       const nextPageButton = await page.$(
         storeData.scraping_utils.next_page_selector,
       )
@@ -52,14 +56,14 @@ export class ScrapingService {
         url = null
       }
 
-      console.log('obtained next page button:', nextPageButton)
+      /* console.log('obtained next page button:', nextPageButton)
 
-      console.log('url', url)
+      console.log('url', url) */
 
       const productsOnPage = await page.$$(
         storeData.scraping_utils.product_selector,
       )
-      console.log('obtained products on page: ', productsOnPage.length)
+      //console.log('obtained products on page: ', productsOnPage.length)
       processedProducts.push(
         ...(await this.iterateProducts(productsOnPage, storeData)),
       )
@@ -69,7 +73,7 @@ export class ScrapingService {
         de la página anterior 
       */
       if (!!url) {
-        console.log('going to next page: ', url)
+        //console.log('going to next page: ', url)
         /*  await nextPageButton.click() */
         await page.goto(url)
         /* 
@@ -78,12 +82,14 @@ export class ScrapingService {
         */
       }
     } while (!!url)
-    console.log('processedProducts: ', processedProducts.length)
+    console.log(
+      `processed Products from ${storeData.name} :${processedProducts.length}`,
+    )
     return processedProducts
   }
 
   async iterateProducts(products, storeData) {
-    console.log('iterating products...')
+    //console.log('iterating products...')
     return await Promise.all(
       products.map(async (product) => {
         return await this.obtainProductDetails(product, storeData)
@@ -92,7 +98,7 @@ export class ScrapingService {
   }
 
   async obtainProductDetails(product, storeData) {
-    console.log("obtaining product's details...")
+    //console.log("obtaining product's details...")
     const titleElement = await product.$(
       storeData.scraping_utils.product_title_selector,
     )
@@ -105,12 +111,12 @@ export class ScrapingService {
     const productTitle = await titleElement.evaluate((node) => node.textContent)
     const productPrice = await priceElement.evaluate((node) => node.textContent)
     const productLink = await linkElement.evaluate((node) => node.href)
-    console.log('productInfo: ', {
+    /*  console.log('productInfo: ', {
       store_id: storeData._id,
       title: productTitle,
       price: productPrice,
       link: productLink,
-    })
+    }) */
     await this.classificateProductService.clasificateProduct({
       store_id: storeData._id,
       title: productTitle,

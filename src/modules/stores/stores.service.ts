@@ -29,8 +29,11 @@ export class StoresService {
     return await this.StoreProduct.findById(id)
   }
 
+  async getStoreProductByLink(link: string): Promise<any> {
+    return await this.StoreProduct.findOne({ link: link }).exec()
+  }
+
   async getStoreProductByName(name: string): Promise<any> {
-    console.log('get store product by name', name)
     const regex = new RegExp(name, 'i') //la i es para que sea case insensitive
     return await this.StoreProduct.findOne({ name: regex }).exec()
   }

@@ -22,50 +22,46 @@ export class ClassificateProductsService {
     price: string
     link: string
   }) {
-    // pregunto por algún producto de tienda que tenga el mismo nombre
-    const storeProductOnDB = await this.storesService.getStoreProductByName(
-      newProduct.title,
+    // pregunto por algún producto de tienda que tenga el mismo Link
+    const storeProductOnDB = await this.storesService.getStoreProductByLink(
+      newProduct.link,
     )
 
-    /* 
-      si existe el producto en la tienda, se actualiza el precio y
-      se agrega el nuevo precio al historial 
-    */
+    //  si existe el producto en la tienda, se actualiza el precio y
+    //  se agrega el nuevo precio al historial
 
     if (storeProductOnDB) {
-      const updateStoreProduct = {
-        actual_price: formatPriceToNumber(newProduct.price),
-        price_history: [
-          ...storeProductOnDB._doc.price_history,
-          {
-            price: formatPriceToNumber(newProduct.price),
-            date: new Date(),
-          },
-        ],
-      }
       return await this.storesService.updateStoreProduct(
         storeProductOnDB._doc._id,
-        updateStoreProduct,
+        {
+          actual_price: formatPriceToNumber(newProduct.price),
+          price_history: [
+            ...storeProductOnDB._doc.price_history,
+            {
+              price: formatPriceToNumber(newProduct.price),
+              date: new Date(),
+            },
+          ],
+        },
       )
     }
 
-    // pregunto si en el nombre del producto está el nombre de la escala
+    // por alguna razón está duplicando los products, hay que corregir
+
+    // pregunto si en el nombre del producto está el nombre algun grade
     const grade = Object.values(GunplaGrade).find((grade) =>
-      newProduct.title.includes(grade),
+      newProduct.title.toUpperCase().includes(grade),
     )
-    console.log('si es un gunpla de grado: ', grade)
+
     // si no tiene grade se asume que no es un gunpla
     if (!grade) return
 
-    /* 
-      normalizeName elimina palabras viciosas como "bandai" y "hobby"
-      para poder comparar de mejor manera los nombres de los productos
-    */
+    //  normalizeName elimina palabras viciosas como "bandai" y "hobby"
+    //  para poder comparar de mejor manera los nombres de los productos
+
     const normalizedName = normalizeName(newProduct.title)
-    console.log('normalizedName: ', normalizedName)
-    /* 
-      Busco todos los productos con el mismo grado
-    */
+
+    //  Busco todos los productos con el mismo grado
     const registered_products = await this.getProductService.findProduct(
       undefined,
       undefined,
@@ -84,15 +80,13 @@ export class ClassificateProductsService {
     }
     if (result) return
 
-    console.log('creating new product')
     const { _id } = await this.createProductService.createProduct({
       name: normalizedName,
       gunpla_grade: grade,
       category: 'gunpla',
     })
 
-    console.log('creating new store product', _id)
-    const createStoreProduct = {
+    return await this.storesService.createStoreProduct({
       name: newProduct.title,
       normalized_name: normalizedName,
       actual_price: formatPriceToNumber(newProduct.price),
@@ -102,34 +96,31 @@ export class ClassificateProductsService {
           date: new Date(),
         },
       ],
-      link: newProduct.link,
+      link: newProduct.link.toString(),
       available: true,
       store_id: newProduct.store_id,
       product_id: _id,
-    }
-    return await this.storesService.createStoreProduct(createStoreProduct)
+    })
   }
 
   async isAlreadyOnStoreProduct(newProduct, registeredProduct, normalizedName) {
     const storeAlreadyOnProduct = registeredProduct.store_products.some(
       (store) => store.store_id.toString() === newProduct.store_id.toString(),
     )
-    console.log('is on the product: ', storeAlreadyOnProduct ? 'yes' : 'no')
+
+    //  Si el nuevo storeProduct  pertenece a una tienda que ya tiene el producto
+    //  se retorna y no se hace nada
     if (storeAlreadyOnProduct) return
-    console.log('passed the store check')
 
     const nameSimilarity = stringSimilarity.compareTwoStrings(
       registeredProduct.name,
       normalizedName,
     )
 
-    console.log('nameSimilarity: ', nameSimilarity)
-    // estudiando que similarity es la correcta
     if (nameSimilarity < 0.84) return
 
-    //  Si la similaridad es correcta, se crea el nuevo producto en la tienda tienda
-
-    const newStoreProduct = {
+    //  Se compruba la similaridad de nombre, si no es similar se retorna y no se hace nada
+    return await this.storesService.createStoreProduct({
       name: newProduct.title,
       normalized_name: normalizedName,
       actual_price: formatPriceToNumber(newProduct.price),
@@ -143,7 +134,6 @@ export class ClassificateProductsService {
       available: true,
       store_id: newProduct.store_id,
       product_id: registeredProduct._id,
-    }
-    return await this.storesService.createStoreProduct(newStoreProduct)
+    })
   }
 }
